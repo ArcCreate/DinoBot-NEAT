@@ -119,8 +119,7 @@ class Dinosaur:
         pygame.draw.rect(SCREEN, self.color, (self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2)
         #draw line of sight
         for obstacle in obstacles:
-            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.midbottom, 2)
-            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.midtop, 2)
+            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.topleft, 2)
         
 
 #Cloud Object
@@ -173,7 +172,7 @@ class LargeCactus(Obstacle):
 class Bird(Obstacle):
     def __init__(self, image, amount):
         super().__init__(image, amount)
-        rand = random.randint(0,1)
+        rand = random.randint(1,1)
         if rand == 0:
             self.rect.y = 250
         else:
@@ -301,7 +300,7 @@ def eval_genomes(genomes, config):
         
         for i, dino in enumerate(dinosaurs):
             #inputs to NEAT (Y position of dino, top of obstacles, bottom of obstacle)
-            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom)))
+            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop)))
 
             #get outputs
             decesion = output.index(max(output))
@@ -311,11 +310,6 @@ def eval_genomes(genomes, config):
                 dino.isRunning = False
                 dino.isDucking = False
                 ge[i].fitness -= 1
-            #ducking
-            elif  decesion == 1:                
-                dino.isJumping = False
-                dino.isRunning = False
-                dino.isDucking = True
 
         #Drawing clouds
         cloud.draw(SCREEN)
