@@ -41,18 +41,19 @@ FONT = pygame.font.Font('freesansbold.ttf', 20)
 #Dinosaur Object
 class Dinosaur: 
     #variables
-    X = 80
+    X = 60
     Y = 310
-    JumpHeight = 8.5
+    YDuck = 340
+    Velocity = 8.5
 
     #constructor
     def __init__(self, img = RUNNING[0]):
         #defaults and variables
         self.image = img
-        self.running = True
-        self.jumping = False
-        self.ducking = False
-        self.jumpHeight = self.JumpHeight
+        self.isRunning = True
+        self.isJumping = False
+        self.isDucking = False
+        self.jumpHeight = self.Velocity
         #creating rect object to store co ordinates [X,Y correspog to top left of dino image]
         self.rect = pygame.Rect(self.X, self.Y, img.get_width(), img.get_height())
         #animation loop
@@ -61,31 +62,42 @@ class Dinosaur:
     #functions with parameters
     def update(self):
         #check what dino is doing
-        if self.running:
+        if self.isRunning:
             self.run()
-        if self.jumping:
+        if self.isJumping:
             self.jump()
-        if self.ducking:
+        if self.isDucking:
             self.duck()
         if self.step >= 10:
             self.step = 0
 
 
     def jump(self):
-        print("jumping")
-        self.jumping = False
+        self.image = JUMPING[0]
+        #jumping physics
+        if self.isJumping:
+            #going up is actually decreasing in pygame
+            self.rect.y -= self.jumpHeight * 4
+            self.jumpHeight -= 0.8
+        if self.jumpHeight < - self.Velocity:        
+            self.isJumping = False
+            self.jumpHeight = self.Velocity
 
     def run(self):
-        #tick counting, switch every 5
+        #tick counting, switch every 5 for animation
         self.image = RUNNING[self.step // 5]
         self.rect.x = self.X
         self.rect.y = self.Y
         self.step += 1
 
     def duck(self):
-        print("ducking")
-        self.ducking = False
-        
+        #tick counting, switch every 5 for animation
+        self.image = DUCKING[self.step // 5]
+        self.rect.x = self.X
+        self.rect.y = self.YDuck
+        self.step += 1
+        self.isDucking = False
+
     def draw(self, SCREEN): 
         SCREEN.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -97,6 +109,8 @@ class Dinosaur:
 def main():
     #clock variable
     clock = pygame.time.Clock()
+
+    #List of dino objects for when NEAT is being used
     dinosaurs = [Dinosaur()]
 
     #game loop
@@ -120,20 +134,20 @@ def main():
         input = pygame.key.get_pressed()
         for i, dino in enumerate(dinosaurs):
             #jumping
-            if input[pygame.K_UP] and not dino.jumping:
-                dino.jumping = True
-                dino.running = False
-                dino.ducking = False
+            if input[pygame.K_UP] and not dino.isJumping:
+                dino.isJumping = True
+                dino.isRunning = False
+                dino.isDucking = False
             #ducking
-            elif input[pygame.K_DOWN] and not dino.jumping:
-                dino.jumping = False
-                dino.running = False
-                dino.ducking = True
+            elif input[pygame.K_DOWN] and not dino.isJumping:
+                dino.isJumping = False
+                dino.isRunning = False
+                dino.isDucking = True
             #running
-            elif not (dino.jumping or input[pygame.K_DOWN]):
-                dino.jumping = False
-                dino.running = True
-                dino.ducking = False
+            elif not (dino.isJumping or input[pygame.K_DOWN]):
+                dino.isJumping = False
+                dino.isRunning = True
+                dino.isDucking = False
 
         #frames per second
         clock.tick(30)
