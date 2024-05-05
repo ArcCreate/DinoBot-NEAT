@@ -16,6 +16,8 @@ GAME_SPEED = 14
 x_pos = 0
 y_pos = 380
 SCORE = 0
+obstacles = []
+dinosaurs = []
 
 #Importing Assets by looking in project folder
 #Actions
@@ -123,7 +125,54 @@ class Cloud:
     def draw(self, SCREEN): 
         SCREEN.blit(self.image, (self.x, self.y))
 
+#Obstacles
+class Obstacle:
+    def __init__(self, image, amount):
+        self.image = image
+        self.type = amount
+        self.rect = self.image[self.type].get_rect()
+        self.rect.x = SCREEN_WIDTH
 
+    def update(self):
+        self.rect.x -= GAME_SPEED
+        if self.rect.x < -self.rect.width:
+            obstacles.pop()
+
+    def draw(self, SCREEN):
+        SCREEN.blit(self.image[self.type], self.rect)
+
+#small cacti
+class SmallCactus(Obstacle):
+    def __init__(self, image, amount):
+        super().__init__(image, amount)
+        self.rect.y = 325
+
+#large cacti
+class LargeCactus(Obstacle):
+    def __init__(self, image, amount):
+        super().__init__(image, amount)
+        self.rect.y = 300
+
+#bird
+class Bird(Obstacle):
+    def __init__(self, image, amount):
+        super().__init__(image, amount)
+        rand = random.randint(0,1)
+        if rand == 0:
+            self.rect.y = 250
+        else:
+            self.rect.y = 300
+        self.step = 0
+
+    def draw(self, SCREEN):
+        if self.step >= 9:
+            self.step = 0
+        SCREEN.blit(self.image[self.step//5], self.rect)
+        self.step += 1
+
+#remove after death for AI
+def remove(index):
+    dinosaurs.pop(index)
 #-----------------------------------------------------------------------------------------
 
 #main method
@@ -195,6 +244,30 @@ def main():
         #Drawing clouds
         cloud.draw(SCREEN)
         cloud.update()
+
+        #spawning obstacles
+        if len(obstacles) == 0:
+            #randomized obstacle
+            rand = random.randint(0,2)
+            if rand == 0:
+                obstacles.append(SmallCactus(SMALL_CACTUS, random.randint(0, 2)))
+            elif rand == 1:
+                obstacles.append(LargeCactus(LARGE_CACTUS, random.randint(0, 2)))
+            elif rand == 2:
+                obstacles.append(Bird(BIRD, 1))
+
+        #drawing obstacles
+        for obstacle in obstacles:
+            obstacle.draw(SCREEN)
+            obstacle.update()
+            for i, dino in enumerate(dinosaurs):
+                if dino.rect.colliderect(obstacle.rect):
+                    pygame.draw.rect(SCREEN, (255, 0, 0), dino.rect, 2)
+                    #remove(i)
+
+        #end game if there are no more dinosaurs left
+        if len(dinosaurs) == 0:
+            break
 
         #frames per second
         clock.tick(30)
