@@ -398,6 +398,7 @@ def eval_genomes(genomes, config):
                 dino.isJumping = True
                 dino.isRunning = False
                 dino.isDucking = False
+                ge[i].fitness -= 1
 
         #Drawing clouds
         cloud.draw(SCREEN)
