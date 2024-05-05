@@ -1,9 +1,11 @@
 # Importing Packages for the project
 # Drawing game
+import math
 import pygame
 import os
 import random
 import sys
+import neat
 
 #initializing pygame
 pygame.init()
@@ -12,12 +14,6 @@ pygame.init()
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-GAME_SPEED = 14
-x_pos = 0
-y_pos = 380
-SCORE = 0
-obstacles = []
-dinosaurs = []
 
 #Importing Assets by looking in project folder
 #Actions
@@ -50,7 +46,7 @@ class Dinosaur:
     X = 60
     Y = 310
     YDuck = 340
-    Velocity = 8.5
+    Velocity = 8
 
     #constructor
     def __init__(self, img = RUNNING[0]):
@@ -85,13 +81,14 @@ class Dinosaur:
             #going up is actually decreasing in pygame
             self.rect.y -= self.jumpHeight * 4
             self.jumpHeight -= 0.8
-        if self.jumpHeight < - self.Velocity:        
+        if self.jumpHeight < -self.Velocity:        
             self.isJumping = False
             self.jumpHeight = self.Velocity
 
     def run(self):
         #tick counting, switch every 5 for animation
         self.image = RUNNING[self.step // 5]
+        self.rect = self.image.get_rect()
         self.rect.x = self.X
         self.rect.y = self.Y
         self.step += 1
@@ -99,6 +96,7 @@ class Dinosaur:
     def duck(self):
         #tick counting, switch every 5 for animation
         self.image = DUCKING[self.step // 5]
+        self.rect = self.image.get_rect()
         self.rect.x = self.X
         self.rect.y = self.YDuck
         self.step += 1
@@ -169,14 +167,11 @@ class Bird(Obstacle):
             self.step = 0
         SCREEN.blit(self.image[self.step//5], self.rect)
         self.step += 1
-
-#remove after death for AI
-def remove(index):
-    dinosaurs.pop(index)
 #-----------------------------------------------------------------------------------------
 
-#main method
+#main method for simple playing
 def main():
+    obstacles = []
     clock = pygame.time.Clock()
     cloud = Cloud()
 
@@ -263,7 +258,6 @@ def main():
             for i, dino in enumerate(dinosaurs):
                 if dino.rect.colliderect(obstacle.rect):
                     pygame.draw.rect(SCREEN, (255, 0, 0), dino.rect, 2)
-                    #remove(i)
 
         #end game if there are no more dinosaurs left
         if len(dinosaurs) == 0:
@@ -277,4 +271,166 @@ def main():
 
 
 #call main method to run game
-main()
+#main()
+
+#-----------------------------------------------------------------------------------------
+
+#remove after death for AI
+def remove(index):
+    dinosaurs.pop(index)
+    ge.pop(index)
+    nets.pop(index)
+
+def distance(posa, posb):
+    dx = posa[0] - posb[0]
+    dy = posa[1] - posb[1]
+    return math.sqrt(dx**2+dy**2)
+
+#AI method for evalutation of subject
+def eval_genomes(genomes, config):    
+    #global variables 
+    global GAME_SPEED, x_pos, y_pos, obstacles, dinosaurs, ge, nets, SCORE
+    
+    GAME_SPEED = 14
+    x_pos = 0
+    y_pos = 380
+    SCORE = 0
+    obstacles = []
+    
+    #List of dino objects for NEAT
+    dinosaurs = []
+    #will store stats on each dinosaur
+    ge = []
+    nets = []
+
+    clock = pygame.time.Clock()
+    cloud = Cloud()
+
+    for genome_id, genome in genomes:
+        dinosaurs.append(Dinosaur())
+        ge.append(genome)
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        nets.append(net)
+        genome.fitness = 0
+
+    #Score
+    def score():
+        global SCORE, GAME_SPEED
+        SCORE += 1
+        if SCORE % 100 == 0:
+            GAME_SPEED += 1
+        text = FONT.render(str(SCORE), True, (0,0,0))
+        SCREEN.blit(text, (1000, 50))
+
+    #background
+    def background():
+        global x_pos, y_pos
+        image_width = GROUND.get_width()
+        SCREEN.blit(GROUND, (x_pos, y_pos))
+        SCREEN.blit(GROUND, (image_width + x_pos, y_pos))
+        if x_pos <= -image_width:
+            SCREEN.blit(GROUND, (image_width + x_pos, y_pos))
+            x_pos = 0
+        x_pos -= GAME_SPEED
+
+    #game loop
+    run = True
+    while run:
+        #exit game
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+
+        #Drawing white backgorund
+        SCREEN.fill((255,255,255))
+        score()
+        background()        
+
+        #spawning obstacles
+        if len(obstacles) == 0:
+            #randomized obstacle
+            rand = random.randint(0,2)
+            if rand == 0:
+                obstacles.append(SmallCactus(SMALL_CACTUS, random.randint(0, 2)))
+            elif rand == 1:
+                obstacles.append(LargeCactus(LARGE_CACTUS, random.randint(0, 2)))
+            elif rand == 2:
+                obstacles.append(Bird(BIRD, 1))
+
+        #collision
+        for obstacle in obstacles:
+            obstacle.draw(SCREEN)
+            obstacle.update()
+            for i, dino in enumerate(dinosaurs):
+                if dino.rect.colliderect(obstacle.rect):
+                    ge[i].fitness -= 1
+                    remove(i)
+
+        #Drawing dino
+        for dino in dinosaurs:            
+            dino.update()
+            dino.draw(SCREEN)
+        
+        for i, dino in enumerate(dinosaurs):
+            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop)))
+            #get outputs
+            jump_output = output[0]
+            duck_output = output[1]
+            #jumping
+            if jump_output > 0.5:                
+                dino.isJumping = True
+                dino.isRunning = False
+                dino.isDucking = False
+                ge[i].fitness -= 0.1
+            #ducking
+            elif duck_output > 0.5:
+                dino.isJumping = False
+                dino.isRunning = False
+                dino.isDucking = True
+            #running
+            else:
+                dino.isJumping = False
+                dino.isRunning = True
+                dino.isDucking = False
+                ge[i].fitness += 0.01
+
+        #Drawing clouds
+        cloud.draw(SCREEN)
+        cloud.update()
+
+        #end game if there are no more dinosaurs left
+        if len(dinosaurs) == 0:
+            break
+
+        #frames per second
+        clock.tick(30)
+
+        #update screen
+        pygame.display.update()
+
+#Neat setup
+def run(config_path):
+    global pop
+    #configurate neat algorithm
+    config = neat.config.Config(
+        #default algorithms for simplicity
+        neat.DefaultGenome,
+        neat.DefaultReproduction,
+        neat.DefaultSpeciesSet,
+        neat.DefaultStagnation,
+        #file path
+        config_path
+    )
+
+    #population of dinosaurs
+    pop = neat.Population(config)
+    #run evolution/fitness function 50 times
+    pop.run(eval_genomes, 50)
+
+
+if __name__ == '__main__':
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, 'config.txt')
+    run(config_path)
