@@ -86,6 +86,7 @@ class Dinosaur:
         if self.jumpHeight < -self.Velocity: 
             self.isRunning = True       
             self.isJumping = False
+            self.isDucking = False
             self.jumpHeight = self.Velocity
 
     def run(self):
@@ -95,6 +96,8 @@ class Dinosaur:
         self.rect.x = self.X
         self.rect.y = self.Y
         self.step += 1
+        self.isJumping = False
+        self.isDucking = False
 
     def duck(self):
         #tick counting, switch every 5 for animation
@@ -105,6 +108,7 @@ class Dinosaur:
         self.step += 1
         self.isDucking = False
         self.isRunning = True
+        self.isJumping = False
 
     def draw(self, SCREEN): 
         SCREEN.blit(self.image, (self.rect.x, self.rect.y))
@@ -159,9 +163,9 @@ class LargeCactus(Obstacle):
 class Bird(Obstacle):
     def __init__(self, image, amount):
         super().__init__(image, amount)
-        rand = random.randint(0,1)
+        rand = random.randint(1,1)
         if rand == 0:
-            self.rect.y = 250
+            self.rect.y = 275
         else:
             self.rect.y = 300
         self.step = 0
@@ -262,7 +266,7 @@ def eval_genomes(genomes, config):
         #spawning obstacles
         if len(obstacles) == 0:
             #randomized obstacle
-            rand = random.randint(0,1)
+            rand = random.randint(0,2)
             if rand == 0:
                 obstacles.append(SmallCactus(SMALL_CACTUS, random.randint(0, 2)))
             elif rand == 1:
@@ -288,12 +292,18 @@ def eval_genomes(genomes, config):
         for i, dino in enumerate(dinosaurs):
             output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop)))
             #get outputs
+            decesion = output.index(max(output))
             #jumping
-            if  output[0] < 0:                
+            if  decesion == 0:                
                 dino.isJumping = True
                 dino.isRunning = False
                 dino.isDucking = False
                 ge[i].fitness -= 1
+            #ducking
+            if  decesion == 1:                
+                dino.isJumping = False
+                dino.isRunning = False
+                dino.isDucking = True
 
         #Drawing clouds
         cloud.draw(SCREEN)
