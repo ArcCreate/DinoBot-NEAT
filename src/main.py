@@ -12,12 +12,16 @@ pygame.init()
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+GAME_SPEED = 14
+x_pos = 0
+y_pos = 380
+SCORE = 0
 
 #Importing Assets by looking in project folder
 #Actions
 RUNNING = [pygame.image.load(os.path.join("Assets/Dino", "DinoRun1.png")),
            pygame.image.load(os.path.join("Assets/Dino", "DinoRun2.png"))]
-JUMPING = [pygame.image.load(os.path.join("Assets/Dino", "DinoJump.png"))]
+JUMPING = pygame.image.load(os.path.join("Assets/Dino", "DinoJump.png"))
 DUCKING = [pygame.image.load(os.path.join("Assets/Dino", "DinoDuck1.png")),
            pygame.image.load(os.path.join("Assets/Dino", "DinoDuck2.png"))]
 
@@ -31,7 +35,7 @@ LARGE_CACTUS = [pygame.image.load(os.path.join("Assets/Cactus", "LargeCactus1.pn
 BIRD = [pygame.image.load(os.path.join("Assets/Bird", "Bird1.png")),
         pygame.image.load(os.path.join("Assets/Bird", "Bird2.png"))]
 CLOUD = pygame.image.load(os.path.join("Assets/Other", "Cloud.png"))
-GROUND = [pygame.image.load(os.path.join("Assets/Other", "Track.png"))]
+GROUND = pygame.image.load(os.path.join("Assets/Other", "Track.png"))
 
 #Text
 FONT = pygame.font.Font('freesansbold.ttf', 20)
@@ -73,7 +77,7 @@ class Dinosaur:
 
 
     def jump(self):
-        self.image = JUMPING[0]
+        self.image = JUMPING
         #jumping physics
         if self.isJumping:
             #going up is actually decreasing in pygame
@@ -101,17 +105,54 @@ class Dinosaur:
     def draw(self, SCREEN): 
         SCREEN.blit(self.image, (self.rect.x, self.rect.y))
 
+#Cloud Object
+class Cloud:
+    #Constructor
+    def __init__(self):
+        self.x = SCREEN_WIDTH + random.randint(800, 1000)
+        self.y = random.randint(50, 100)
+        self.image = CLOUD
+        self.width = self.image.get_width()
+    
+    def update(self):
+        self.x -= GAME_SPEED
+        if self.x < -self.width:
+            self.x = SCREEN_WIDTH + random.randint(2500, 3000)
+            self.y = random.randint(50, 100)
+    
+    def draw(self, SCREEN): 
+        SCREEN.blit(self.image, (self.x, self.y))
 
 
 #-----------------------------------------------------------------------------------------
 
 #main method
 def main():
-    #clock variable
     clock = pygame.time.Clock()
+    cloud = Cloud()
 
     #List of dino objects for when NEAT is being used
     dinosaurs = [Dinosaur()]
+
+    #Score
+    def score():
+        global SCORE, GAME_SPEED
+        SCORE += 1
+        if SCORE % 100 == 0:
+            GAME_SPEED += 1
+        text = FONT.render(str(SCORE), True, (0,0,0))
+        SCREEN.blit(text, (1000, 50))
+
+    #background
+    def background():
+        global x_pos, y_pos
+        image_width = GROUND.get_width()
+        SCREEN.blit(GROUND, (x_pos, y_pos))
+        SCREEN.blit(GROUND, (image_width + x_pos, y_pos))
+        if x_pos <= -image_width:
+            SCREEN.blit(GROUND, (image_width + x_pos, y_pos))
+            x_pos = 0
+        x_pos -= GAME_SPEED
 
     #game loop
     run = True
@@ -123,13 +164,15 @@ def main():
                 sys.exit()
 
 
-        #Drawing screen
+        #Drawing white backgorund
         SCREEN.fill((255,255,255))
+        score()
+        background()
 
+        #Drawing dino
         for dino in dinosaurs:            
             dino.update()
             dino.draw(SCREEN)
-
         #Getting input
         input = pygame.key.get_pressed()
         for i, dino in enumerate(dinosaurs):
@@ -148,6 +191,10 @@ def main():
                 dino.isJumping = False
                 dino.isRunning = True
                 dino.isDucking = False
+
+        #Drawing clouds
+        cloud.draw(SCREEN)
+        cloud.update()
 
         #frames per second
         clock.tick(30)
