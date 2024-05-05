@@ -81,7 +81,8 @@ class Dinosaur:
             #going up is actually decreasing in pygame
             self.rect.y -= self.jumpHeight * 4
             self.jumpHeight -= 0.8
-        if self.jumpHeight < -self.Velocity:        
+        if self.jumpHeight < -self.Velocity: 
+            self.isRunning = True       
             self.isJumping = False
             self.jumpHeight = self.Velocity
 
@@ -101,6 +102,7 @@ class Dinosaur:
         self.rect.y = self.YDuck
         self.step += 1
         self.isDucking = False
+        self.isRunning = True
 
     def draw(self, SCREEN): 
         SCREEN.blit(self.image, (self.rect.x, self.rect.y))
@@ -381,7 +383,7 @@ def eval_genomes(genomes, config):
             obstacle.update()
             for i, dino in enumerate(dinosaurs):
                 if dino.rect.colliderect(obstacle.rect):
-                    ge[i].fitness -= 1
+                    ge[i].fitness += SCORE
                     remove(i)
         #Drawing dino
         for dino in dinosaurs:            
@@ -391,22 +393,10 @@ def eval_genomes(genomes, config):
         for i, dino in enumerate(dinosaurs):
             output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop)))
             #get outputs
-            jump_output = output[1]
-            duck_output = output[0]
             #jumping
-            if jump_output > 0.5:                
+            if  output[0] < 0:                
                 dino.isJumping = True
                 dino.isRunning = False
-                dino.isDucking = False
-            #ducking
-            elif duck_output > 0.5:
-                dino.isJumping = False
-                dino.isRunning = False
-                dino.isDucking = True
-            #running
-            else:
-                dino.isJumping = False
-                dino.isRunning = True
                 dino.isDucking = False
 
         #Drawing clouds
