@@ -301,10 +301,8 @@ def eval_genomes(genomes, config):
         
         for i, dino in enumerate(dinosaurs):
             #inputs to NEAT (Y position of dino, top of obstacles, bottom of obstacle)
-            if isinstance(obstacle, Bird):
-                output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom), 0))
-            else:
-                output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom), 1))
+            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom)))
+
             #get outputs
             decesion = output.index(max(output))
             #jumping
@@ -318,9 +316,6 @@ def eval_genomes(genomes, config):
                 dino.isJumping = False
                 dino.isRunning = False
                 dino.isDucking = True
-                ge[i].fitness += 0.5
-            else:
-                ge[i].fitness += 1
 
         #Drawing clouds
         cloud.draw(SCREEN)
