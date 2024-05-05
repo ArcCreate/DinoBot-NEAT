@@ -171,9 +171,18 @@ class Bird(Obstacle):
 
 #main method for simple playing
 def main():
+    #global variables 
+    global GAME_SPEED, x_pos, y_pos, obstacles, dinosaurs, SCORE
+    
+    GAME_SPEED = 14
+    x_pos = 0
+    y_pos = 380
+    SCORE = 0
     obstacles = []
+    dinosaurs = Dinosaur()
     clock = pygame.time.Clock()
     cloud = Cloud()
+    
 
     #List of dino objects for when NEAT is being used
     dinosaurs = [Dinosaur()]
@@ -269,10 +278,6 @@ def main():
         #update screen
         pygame.display.update()
 
-
-#call main method to run game
-#main()
-
 #-----------------------------------------------------------------------------------------
 
 #remove after death for AI
@@ -332,6 +337,16 @@ def eval_genomes(genomes, config):
             SCREEN.blit(GROUND, (image_width + x_pos, y_pos))
             x_pos = 0
         x_pos -= GAME_SPEED
+    
+    
+
+    def statistics():
+        global dinosaurs, game_speed, ge
+        text_1 = FONT.render(f'Dinosaurs Alive:  {str(len(dinosaurs))}', True, (0, 0, 0))
+        text_2 = FONT.render(f'Generation:  {pop.generation+1}', True, (0, 0, 0))
+
+        SCREEN.blit(text_1, (50, 450))
+        SCREEN.blit(text_2, (50, 480)) 
 
     #game loop
     run = True
@@ -346,12 +361,13 @@ def eval_genomes(genomes, config):
         #Drawing white backgorund
         SCREEN.fill((255,255,255))
         score()
-        background()        
+        background() 
+        statistics()    
 
         #spawning obstacles
         if len(obstacles) == 0:
             #randomized obstacle
-            rand = random.randint(0,2)
+            rand = random.randint(0,1)
             if rand == 0:
                 obstacles.append(SmallCactus(SMALL_CACTUS, random.randint(0, 2)))
             elif rand == 1:
@@ -367,7 +383,6 @@ def eval_genomes(genomes, config):
                 if dino.rect.colliderect(obstacle.rect):
                     ge[i].fitness -= 1
                     remove(i)
-
         #Drawing dino
         for dino in dinosaurs:            
             dino.update()
@@ -376,14 +391,13 @@ def eval_genomes(genomes, config):
         for i, dino in enumerate(dinosaurs):
             output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop)))
             #get outputs
-            jump_output = output[0]
-            duck_output = output[1]
+            jump_output = output[1]
+            duck_output = output[0]
             #jumping
             if jump_output > 0.5:                
                 dino.isJumping = True
                 dino.isRunning = False
                 dino.isDucking = False
-                ge[i].fitness -= 0.1
             #ducking
             elif duck_output > 0.5:
                 dino.isJumping = False
@@ -394,7 +408,6 @@ def eval_genomes(genomes, config):
                 dino.isJumping = False
                 dino.isRunning = True
                 dino.isDucking = False
-                ge[i].fitness += 0.01
 
         #Drawing clouds
         cloud.draw(SCREEN)
@@ -434,3 +447,6 @@ if __name__ == '__main__':
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'config.txt')
     run(config_path)
+
+#call main method to run game
+main()
