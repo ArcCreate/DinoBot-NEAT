@@ -58,6 +58,7 @@ class Dinosaur:
         self.isJumping = False
         self.isDucking = False
         self.jumpHeight = self.Velocity
+        self.color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         #creating rect object to store co ordinates [X,Y correspog to top left of dino image]
         self.rect = pygame.Rect(self.X, self.Y, img.get_width(), img.get_height())
         #animation loop
@@ -114,6 +115,12 @@ class Dinosaur:
 
     def draw(self, SCREEN): 
         SCREEN.blit(self.image, (self.rect.x, self.rect.y))
+        #draw hitbox
+        pygame.draw.rect(SCREEN, self.color, (self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2)
+        #draw line of sight
+        for obstacle in obstacles:
+            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.center, 2)
+        
 
 #Cloud Object
 class Cloud:
@@ -165,7 +172,7 @@ class LargeCactus(Obstacle):
 class Bird(Obstacle):
     def __init__(self, image, amount):
         super().__init__(image, amount)
-        rand = random.randint(1,1)
+        rand = random.randint(0,1)
         if rand == 0:
             self.rect.y = 275
         else:
@@ -301,7 +308,6 @@ def eval_genomes(genomes, config):
                 dino.isRunning = False
                 dino.isDucking = False
                 ge[i].fitness -= 1
-
         #Drawing clouds
         cloud.draw(SCREEN)
         cloud.update()
