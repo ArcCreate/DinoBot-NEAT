@@ -79,6 +79,8 @@ class Dinosaur:
     def jump(self):
         self.image = JUMPING
         #jumping physics
+        if self.isDucking:
+            self.rect.y = self.Y
         if self.isJumping:
             #going up is actually decreasing in pygame
             self.rect.y -= self.jumpHeight * 4
@@ -294,16 +296,11 @@ def eval_genomes(genomes, config):
             #get outputs
             decesion = output.index(max(output))
             #jumping
-            if  decesion == 0:                
+            if  decesion == 0 and dino.rect.y == dino.Y:                
                 dino.isJumping = True
                 dino.isRunning = False
                 dino.isDucking = False
                 ge[i].fitness -= 1
-            #ducking
-            if  decesion == 1:                
-                dino.isJumping = False
-                dino.isRunning = False
-                dino.isDucking = True
 
         #Drawing clouds
         cloud.draw(SCREEN)
