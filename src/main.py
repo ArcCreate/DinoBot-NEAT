@@ -299,7 +299,8 @@ def eval_genomes(genomes, config):
             dino.draw(SCREEN)
         
         for i, dino in enumerate(dinosaurs):
-            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop)))
+            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom)))
+
             #get outputs
             decesion = output.index(max(output))
             #jumping
@@ -308,6 +309,7 @@ def eval_genomes(genomes, config):
                 dino.isRunning = False
                 dino.isDucking = False
                 ge[i].fitness -= 1
+
         #Drawing clouds
         cloud.draw(SCREEN)
         cloud.update()
