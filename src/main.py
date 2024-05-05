@@ -119,7 +119,8 @@ class Dinosaur:
         pygame.draw.rect(SCREEN, self.color, (self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2)
         #draw line of sight
         for obstacle in obstacles:
-            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.center, 2)
+            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.midbottom, 2)
+            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.midtop, 2)
         
 
 #Cloud Object
@@ -174,7 +175,7 @@ class Bird(Obstacle):
         super().__init__(image, amount)
         rand = random.randint(0,1)
         if rand == 0:
-            self.rect.y = 275
+            self.rect.y = 250
         else:
             self.rect.y = 300
         self.step = 0
@@ -299,8 +300,11 @@ def eval_genomes(genomes, config):
             dino.draw(SCREEN)
         
         for i, dino in enumerate(dinosaurs):
-            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom)))
-
+            #inputs to NEAT (Y position of dino, top of obstacles, bottom of obstacle)
+            if isinstance(obstacle, Bird):
+                output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom), 0))
+            else:
+                output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop), distance((dino.rect.x, dino.rect.y), obstacle.rect.midbottom), 1))
             #get outputs
             decesion = output.index(max(output))
             #jumping
@@ -309,6 +313,14 @@ def eval_genomes(genomes, config):
                 dino.isRunning = False
                 dino.isDucking = False
                 ge[i].fitness -= 1
+            #ducking
+            elif  decesion == 1:                
+                dino.isJumping = False
+                dino.isRunning = False
+                dino.isDucking = True
+                ge[i].fitness += 0.5
+            else:
+                ge[i].fitness += 1
 
         #Drawing clouds
         cloud.draw(SCREEN)
@@ -343,7 +355,7 @@ def run(config_path):
     #population of dinosaurs
     pop = neat.Population(config)
     #run evolution/fitness function 50 times
-    pop.run(eval_genomes, 50)
+    pop.run(eval_genomes, 1000)
 
 
 if __name__ == '__main__':
