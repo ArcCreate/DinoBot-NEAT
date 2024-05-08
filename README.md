@@ -9,8 +9,24 @@
 ### Demo
 
 ### Branch Specifications
+Multiple branches were formed to store the state of the project at different stages.
+1. **NEAT**: This is the default branch which runs the program seen in the Demo and used for the [Results](tab=readme-ov-file#res "Results Section")
+2. **AI+ducking**: This branch has an AI which directly branched off the base game and determines it's course of action based on the highest of the 3 outputs (Jump, Duck, Run). The reason this is it's own seperate branch is because as noted in the [Results](tab=readme-ov-file#res "Results Section") section, the dinosaurs were never able to reliably develop a nerual network which allowed them to duck under the high birds and this resulted in stagnation in evolution for 10s of generations. Many different input combinations and population sizes were tried but it always resulted in stagnation of progress. 
+3. **BaseGame**: This is the basic GUI implementation of the game which allows you to control the dinosaur as a player. 
+
+---
 
 ### How to Replicate Project
+1. Make sure your Local Machine has [Python](https://www.python.org/downloads/ "Python Download") installed and an IDE like [VS Code](https://code.visualstudio.com/download "VS Code Download").
+2. Clone the repository onto your Local Machine
+3. Use a Virtual Enviroment or use the IDE to run the project by running `main.py`
+4. For Virtual Machine: First navigate to the derictory where the repo was cloned in the terminal and then use the following code to start the VM, install pygame and run the program:
+```bash
+    python -m venv venv
+    venv\Scripts\activate 
+    pip install pygame  
+    python main.py
+```
 
 ## Results
 
@@ -20,3 +36,4 @@
 * [Tutorial](https://www.youtube.com/watch?v=KOBKkPWGP-g&t=2s "YouTube") : Since this is my first use of pygame, this video guided me on how to build the basic framework of the game
   
 ## Steps to Build Upon
+* Modify the NEAT algorithm and fitness function to allow the Dinosaurs to have an option to duck along with jump without causing stagnation. 
