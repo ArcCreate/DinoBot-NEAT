@@ -155,7 +155,7 @@ def eval_genomes(genomes, config):
                 dino.isJumping = True
                 dino.isRunning = False
                 dino.isDucking = False
-                ge[i].fitness -= 1
+                ge[i].fitness -= 20
 
         #Drawing clouds
         cloud.draw(SCREEN)
@@ -190,7 +190,7 @@ def run(config_path):
     #population of dinosaurs
     pop = neat.Population(config)
     #run evolution/fitness function x times
-    pop.run(eval_genomes, 100)
+    pop.run(eval_genomes, 50)
 
 
 if __name__ == '__main__':
