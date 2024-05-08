@@ -10,8 +10,8 @@
 
 ### Branch Specifications
 Multiple branches were formed to store the state of the project at different stages.
-1. **NEAT**: This is the default branch which runs the program seen in the Demo and used for the [Results](tab=readme-ov-file#res "Results Section")
-2. **AI+ducking**: This branch has an AI which directly branched off the base game and determines it's course of action based on the highest of the 3 outputs (Jump, Duck, Run). The reason this is it's own seperate branch is because as noted in the [Results](tab=readme-ov-file#res "Results Section") section, the dinosaurs were never able to reliably develop a nerual network which allowed them to duck under the high birds and this resulted in stagnation in evolution for 10s of generations. Many different input combinations and population sizes were tried but it always resulted in stagnation of progress. 
+1. **NEAT**: This is the default branch which runs the program seen in the Demo and used for the [Results](https://github.com/ArcCreate/DinoBot-NEAT?tab=readme-ov-file#results "Results Section")
+2. **AI+ducking**: This branch has an AI which directly branched off the base game and determines it's course of action based on the highest of the 3 outputs (Jump, Duck, Run). The reason this is it's own seperate branch is because as noted in the [Results](https://github.com/ArcCreate/DinoBot-NEAT?tab=readme-ov-file#results "Results Section") section, the dinosaurs were never able to reliably develop a nerual network which allowed them to duck under the high birds and this resulted in stagnation in evolution for 10s of generations. Many different input combinations and population sizes were tried but it always resulted in stagnation of progress. 
 3. **BaseGame**: This is the basic GUI implementation of the game which allows you to control the dinosaur as a player. 
 
 ---
