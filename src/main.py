@@ -189,8 +189,8 @@ def run(config_path):
 
     #population of dinosaurs
     pop = neat.Population(config)
-    #run evolution/fitness function 50 times
-    pop.run(eval_genomes, 1000)
+    #run evolution/fitness function x times
+    pop.run(eval_genomes, 100)
 
 
 if __name__ == '__main__':
