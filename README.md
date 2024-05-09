@@ -44,7 +44,7 @@ Testing the optimal population size is important because different populations r
 * Conversely, larger sample sizes like 75 and 100 present their own set of challenges. Despite the initial promise of generating decent dino bots in the first generation, subsequent iterations often lead to stagnation, with minimal permenant score improvents observed over the trials. While one would expect the sample size 100 to generate the highest scoring genome, it was actually the sample size of 50 which generated the best results. Similar to a population size of 100, 75 exhibited similar trends of stagnation towards the middle half of generations, indicating limitations in ability as the high number of speciation relating to large population ended up negating continuous development of the neural network. While sample size 75 maintains consistently high scores, it lacked the pronounced peaks observed in sample sizes 100 and 50, suggesting a failure to explore the full potential of the algorithm.
 
 >Comparison of Means and Medians from all trials regarding each population. 
-![Detailed Population Graph](image.png)
+![Detailed Population Graph](AnalysisGraphs/image.png)
 
 ### **NEAT Implementation Optimization**
 Coming Soon
