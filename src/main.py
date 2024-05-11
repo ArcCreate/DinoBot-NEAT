@@ -144,8 +144,8 @@ def eval_genomes(genomes, config):
                     best = SCORE
                     if best > best_fitness:
                         best_genome = nets[0]
-                        best_fitness = lastBest
-                        save_best_genome(best_genome, best_fitness)
+                        best_fitness = best
+                        #save_best_genome(best_genome, best_fitness)
                     remove(i)
 
         #Drawing dino
@@ -212,11 +212,11 @@ def run(config_path):
     pop = neat.Population(config)
 
     #if running from loaded genome
-    try:
-        load_best_genome()
-        print("Loaded best genome with fitness:", best_fitness)
-    except FileNotFoundError:
-        print("No previous best genome found. Starting from scratch.")
+    # try:
+    #     load_best_genome()
+    #     print("Loaded best genome with fitness:", best_fitness)
+    # except FileNotFoundError:
+    #     print("No previous best genome found. Starting from scratch.")
     #run evolution/fitness function x times
     pop.run(eval_genomes, 50)
 

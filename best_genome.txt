@@ -1,2 +1,2 @@
-0
-<neat.nn.feed_forward.FeedForwardNetwork object at 0x000001DA08D21790>
+4835
+<neat.nn.feed_forward.FeedForwardNetwork object at 0x000001EEE91EFCD0>
