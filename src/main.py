@@ -19,6 +19,10 @@ SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 best = 0
 lastBest = 0
 
+#Storing best genome
+best_genome = None
+best_fitness = 0
+
 #Assets
 GROUND = pygame.image.load(os.path.join("Assets/Other", "Track.png"))
 FONT = pygame.font.Font('freesansbold.ttf', 20)
@@ -47,6 +51,7 @@ def distance(posa, posb):
 def eval_genomes(genomes, config):    
     #global variables 
     global GAME_SPEED, x_pos, y_pos, obstacles, dinosaurs, ge, nets, SCORE, best, lastBest
+    global best_genome, best_fitness
     
     GAME_SPEED = 14
     x_pos = 0
@@ -137,6 +142,10 @@ def eval_genomes(genomes, config):
                 if dino.rect.colliderect(obstacle.rect):
                     ge[i].fitness += SCORE
                     best = SCORE
+                    if best > best_fitness:
+                        best_genome = nets[0]
+                        best_fitness = lastBest
+                        save_best_genome(best_genome, best_fitness)
                     remove(i)
 
         #Drawing dino
@@ -173,9 +182,21 @@ def eval_genomes(genomes, config):
         #update screen
         pygame.display.update()
 
+#Saving genome
+def save_best_genome(genome, fitness):
+    with open('best_genome.txt', 'w') as file:
+        file.write(str(fitness) + '\n')
+        file.write(str(genome))
+
+def load_best_genome():
+    global best_genome, best_fitness
+    with open('best_genome.txt', 'r') as file:
+        best_fitness = float(file.readline().strip())
+        best_genome = file.read()
+
 #Neat setup
 def run(config_path):
-    global pop
+    global pop, best_genome, best_fitness
     #configurate neat algorithm
     config = neat.config.Config(
         #default algorithms for simplicity
@@ -189,6 +210,13 @@ def run(config_path):
 
     #population of dinosaurs
     pop = neat.Population(config)
+
+    #if running from loaded genome
+    try:
+        load_best_genome()
+        print("Loaded best genome with fitness:", best_fitness)
+    except FileNotFoundError:
+        print("No previous best genome found. Starting from scratch.")
     #run evolution/fitness function x times
     pop.run(eval_genomes, 50)
 

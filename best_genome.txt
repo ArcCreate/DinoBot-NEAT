@@ -1,0 +1,2 @@
+0
+<neat.nn.feed_forward.FeedForwardNetwork object at 0x000001DA08D21790>
