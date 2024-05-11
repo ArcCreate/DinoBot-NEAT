@@ -87,4 +87,4 @@ class Dinosaur:
         pygame.draw.rect(SCREEN, self.color, (self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2)
         #draw line of sight
         for obstacle in self.obstacles:
-            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.midtop, 2)
+            pygame.draw.line(SCREEN, self.color, (self.rect.x+54, self.rect.y+12), obstacle.rect.topleft, 2)

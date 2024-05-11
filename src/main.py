@@ -146,12 +146,12 @@ def eval_genomes(genomes, config):
         
         for i, dino in enumerate(dinosaurs):
             #inputs to NEAT (Y position of dino, top of obstacles, bottom of obstacle)
-            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.midtop)))
+            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.topleft)))
 
             #get outputs
-            decesion = output.index(max(output))
+            decision = output.index(max(output))
             #jumping
-            if  decesion == 0 and dino.rect.y == dino.Y:                
+            if  decision == 0 and dino.rect.y == dino.Y:                
                 dino.isJumping = True
                 dino.isRunning = False
                 dino.isDucking = False
@@ -196,5 +196,7 @@ def run(config_path):
 if __name__ == '__main__':
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'config.txt')
-    run(config_path)
+    for _ in range (10):
+        print("trial", _+1)
+        run(config_path)
 
