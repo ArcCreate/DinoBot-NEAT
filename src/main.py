@@ -146,7 +146,7 @@ def eval_genomes(genomes, config):
         
         for i, dino in enumerate(dinosaurs):
             #inputs to NEAT (Y position of dino, top of obstacles, bottom of obstacle)
-            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.topleft)))
+            output = nets[i].activate((dino.rect.y, distance((dino.rect.x, dino.rect.y), obstacle.rect.topleft), distance((dino.rect.x, dino.rect.y), obstacle.rect.topright), GAME_SPEED))
 
             #get outputs
             decision = output.index(max(output))
