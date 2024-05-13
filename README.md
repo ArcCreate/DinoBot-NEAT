@@ -7,7 +7,7 @@
 ## Project
 
 ### Demo
-<video controls src="AnalysisGraphs/Optimized.mp4" title="Title"> </video>
+![Demo](AnalysisGraphs/Gif.gif)
 
 ### Branch Specifications
 Multiple branches were formed to store the state of the project at different stages.
