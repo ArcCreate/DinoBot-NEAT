@@ -29,6 +29,15 @@ Multiple branches were formed to store the state of the project at different sta
     python main.py
 ```
 
+If you want to start the simulation from a saved genome. I saved the highest AI created on file. To run it from this pre loaded neural network uncomment the following lines in main.py.
+```python
+try:
+    load_best_genome()
+    print("Loaded best genome with fitness:", best_fitness)
+except FileNotFoundError:
+    print("No previous best genome found. Starting from scratch.")
+```
+
 ## Results
 
 ### **Population Analysis**
@@ -57,7 +66,7 @@ As seen from the graph above, the random action alogirithm never improved and co
 
 While looking at the video back of test Purple, the Dino AI kept reaching it's max around the 1800 mark because it kept jumping too late. The way the game was made, the farther you traveled, the faster the game gets which means that you have to jump earlier to pass the obstacle. But the AI never knew about the speed of the game so based on it's prespective, the speed of the obstacles was the same as the start. 
 
-After adding the Game Speed as an input, the AI performance increased dramatically and reached the limit of the game at 4800. 
+After adding the Game Speed as an input, the AI performance increased dramatically and reached the limit of the game at [4800](https://github.com/ArcCreate/DinoBot-NEAT?tab=readme-ov-file#demo "Optimized"). 
 >![Score Graph](AnalysisGraphs/Optimized.png)
 >The only reason the AI did not perform any greater was because at 4650 it had to jump immediately after it touched the ground in order to keep up with the speed of the game. 
 
@@ -69,3 +78,4 @@ After adding the Game Speed as an input, the AI performance increased dramatical
   
 ## Steps to Build Upon
 * Modify the NEAT algorithm and fitness function to allow the Dinosaurs to have an option to duck along with jump without causing stagnation. 
+* Add ability to fall down when in air to be able to dodge obstacles at higher speed when in the air.

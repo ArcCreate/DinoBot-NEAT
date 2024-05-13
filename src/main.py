@@ -211,12 +211,14 @@ def run(config_path):
     #population of dinosaurs
     pop = neat.Population(config)
 
-    #if running from loaded genome
+    #if running from loaded genome uncommet the following lines
     # try:
     #     load_best_genome()
     #     print("Loaded best genome with fitness:", best_fitness)
     # except FileNotFoundError:
     #     print("No previous best genome found. Starting from scratch.")
+
+
     #run evolution/fitness function x times
     pop.run(eval_genomes, 50)
 
