@@ -1,5 +1,5 @@
 # Dino Bot using NEAT
- This project used [NEAT](https://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf "Original NEAT Research") (NeuroEvolution of Augmenting Topologies) an algorithm known for mimicing natural evolution based on the concept of the **Fittest** specimen in order to develop nerual networks to beat the [Google Dinosaur Game](https://chrome-dino-game.github.io/ "Example Game").
+ This project used [NEAT](https://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf "Original NEAT Research") (NeuroEvolution of Augmenting Topologies) an algorithm known for mimicing natural evolution based on the concept of the **Fittest** specimen in order to develop neural networks to beat the [Google Dinosaur Game](https://chrome-dino-game.github.io/ "Example Game").
 
  Statistical Analysis was used to determine the most effective population size and Inputs needed to generate the most efficient neural network. 
 
